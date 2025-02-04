@@ -113,7 +113,7 @@ public class MinecraftListener implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         String message = event.getMessage();
-        if (message.length() < 2000) {return;}
+        if (message.length() > 2000) {return;}
 
         if (message.startsWith("!!")) {return;}
 
