@@ -6,13 +6,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.discraft.bot.core.handlers.MinecraftEventPoster;
+import org.discraft.Bot.core.handlers.MinecraftEventPoster;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.Bukkit;
 import org.discraft.Discraft;
-import org.bukkit.event.server.ServerLoadEvent;
+import org.discraft.PlayTimer;
 import org.json.JSONObject;
+
 
 /*
    Type 0: Normal chat message
@@ -125,6 +126,8 @@ public class MinecraftListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         String message = "Has joined the game";
         eventPoster.Post(1, message, event.getPlayer());
+        PlayTimer timer = new PlayTimer();
+        timer.addTimer(event.getPlayer().getUniqueId());
     }
 
 
@@ -132,6 +135,8 @@ public class MinecraftListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         String message = "Has left the game";
         eventPoster.Post(2, message, event.getPlayer());
+        PlayTimer timer = new PlayTimer();
+        timer.removeTimer(event.getPlayer().getUniqueId());
     }
 
     @EventHandler

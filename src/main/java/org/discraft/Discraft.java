@@ -2,10 +2,11 @@ package org.discraft;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.discraft.bot.Bot;
+import org.discraft.Bot.Bot;
 import org.bukkit.Bukkit;
-import org.discraft.bot.core.handlers.MinecraftEventPoster;
+import org.discraft.Bot.core.handlers.MinecraftEventPoster;
 import org.discraft.Listeners.MinecraftListener;
 
 import java.awt.*;
@@ -13,12 +14,15 @@ import java.awt.*;
 public final class Discraft extends JavaPlugin {
     private Bot discordBot;
     private TextChannel channel;
+    private TextChannel console_channel;
 
     public void executeCommand(String command) {
         Bukkit.getScheduler().runTask(this, () -> {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         });
     }
+
+
 
     @Override
     public void onEnable() {
@@ -29,10 +33,16 @@ public final class Discraft extends JavaPlugin {
 
         MinecraftEventPoster eventPoster = new MinecraftEventPoster(this, discordBot.getJda());
         Bukkit.getPluginManager().registerEvents(new MinecraftListener(eventPoster, this), this);
+
         eventPoster.Post(4, null, null);
+
         String rawchannelid = this.getConfig().getString("chat_channel");
+        String rawconsoleid = this.getConfig().getString("console_channel");
         if (rawchannelid.isEmpty() || rawchannelid == null) {return;}
         channel = discordBot.getJda().getTextChannelById(rawchannelid);
+        if (rawconsoleid.isEmpty() || rawconsoleid == null) {return;}
+        console_channel = discordBot.getJda().getTextChannelById(rawconsoleid);
+
     }
 
     @Override
@@ -44,6 +54,7 @@ public final class Discraft extends JavaPlugin {
                     .setColor(color);
 
             channel.sendMessageEmbeds(embed.build()).queue();
+            console_channel.getManager().setTopic("Console is offline | Minecraft version: " + Bukkit.getServer().getVersion() + " | Bukkit: " + Bukkit.getBukkitVersion()).queue();
         }
     }
 }
