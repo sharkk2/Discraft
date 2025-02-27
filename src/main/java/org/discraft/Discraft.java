@@ -2,12 +2,12 @@ package org.discraft;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.discraft.Bot.Bot;
 import org.bukkit.Bukkit;
 import org.discraft.Bot.core.handlers.MinecraftEventPoster;
 import org.discraft.Listeners.MinecraftListener;
+import org.discraft.commands.discordmute;
 
 import java.awt.*;
 
@@ -27,12 +27,13 @@ public final class Discraft extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-
         discordBot = new Bot(this);
         discordBot.start();
 
         MinecraftEventPoster eventPoster = new MinecraftEventPoster(this, discordBot.getJda());
         Bukkit.getPluginManager().registerEvents(new MinecraftListener(eventPoster, this), this);
+
+        getCommand("discordmute").setExecutor(new discordmute(this));
 
         eventPoster.Post(4, null, null);
 

@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.Bukkit;
 import org.discraft.Discraft;
 import org.discraft.PlayTimer;
+import org.discraft.PluginData;
 import org.json.JSONObject;
 
 
@@ -114,6 +115,7 @@ public class MinecraftListener implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         String message = event.getMessage();
+
         if (message.length() > 2000) {return;}
 
         if (message.startsWith("!!")) {return;}
@@ -124,7 +126,13 @@ public class MinecraftListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        PluginData dataManager = new PluginData(plugin);
+
         String message = "Has joined the game";
+        if (dataManager.isFirstJoin(event.getPlayer().getUniqueId())) {message = "Has joined the server for the first time!";}
+
+        JSONObject data = dataManager.initPlayer(event.getPlayer().getUniqueId());
+
         eventPoster.Post(1, message, event.getPlayer());
         PlayTimer timer = new PlayTimer();
         timer.addTimer(event.getPlayer().getUniqueId());

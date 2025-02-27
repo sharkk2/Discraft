@@ -9,13 +9,16 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 
 import net.dv8tion.jda.api.entities.Message;
+import org.bukkit.entity.Player;
 import org.discraft.Discraft;
 import org.bukkit.Bukkit;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.discraft.PluginData;
+import org.json.JSONObject;
 
 public class MessageListener extends ListenerAdapter {
     private final Discraft plugin;
-    private JDA jda;
+    private final JDA jda;
 
     public MessageListener(Discraft plugin, JDA jda) {
         this.plugin = plugin;
@@ -33,7 +36,7 @@ public class MessageListener extends ListenerAdapter {
         boolean reactOnSuccess = plugin.getConfig().getBoolean("reactOnSuccess", true);
         boolean sendToMc = plugin.getConfig().getBoolean("discord_to_minecraft", true);
 
-        if (sendToMc != true) {
+        if (!sendToMc) {
             return;
         }
 
@@ -41,10 +44,6 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
 
-        TextChannel consolechannel = null;
-        if (!consoleid.isEmpty() || consoleid != null) {
-            consolechannel = jda.getTextChannelById(consoleid);
-        }
 
         long channelID = Long.parseLong(channelid);
 
@@ -59,22 +58,22 @@ public class MessageListener extends ListenerAdapter {
             TextChannel channel = guild.getTextChannelById(channelID);
             if (channel != null) {
                if (message.getChannelId().equals(channel.getId())) {
-                   String mcMessage = "";
+                   String discordMessage = message.getContentRaw();
+
                    // if its a reply:
                    if (message.getMessageReference() != null) {
                        Message refMessage = message.getReferencedMessage();
-                       Bukkit.broadcastMessage("§8[Discord] §9" + message.getAuthor().getName() + " §7(replying to " + refMessage.getAuthor().getName() + ")§r: " + message.getContentRaw());
+                       Broadcast("§8[Discord] §9" + message.getAuthor().getName() + " §7(replying to " + refMessage.getAuthor().getName() + ")§r: " + discordMessage);
                        message.addReaction(Emoji.fromUnicode("📩")).queue();
-                       if (reactOnSuccess) {
-                           message.addReaction(Emoji.fromUnicode("📩")).queue();
-                       }
                    } else {
-                       Bukkit.broadcastMessage("§8[Discord] §9" + message.getAuthor().getName() + "§r: " + message.getContentRaw());
-                       if (reactOnSuccess) {
-                           message.addReaction(Emoji.fromUnicode("📩")).queue();
-                       }
+                       Broadcast("§8[Discord] §9" + message.getAuthor().getName() + "§r: " + discordMessage);
 
                    }
+
+                   if (reactOnSuccess) {
+                       message.addReaction(Emoji.fromUnicode("📩")).queue();
+                   }
+
                } else if (message.getChannelId().equals(consoleid)) {
                    List<String> admins = plugin.getConfig().getStringList("admins");
                    if (!admins.contains(message.getAuthor().getId())) {
@@ -86,5 +85,17 @@ public class MessageListener extends ListenerAdapter {
                }
             }
         }
+    }
+
+    private void Broadcast(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PluginData dataManager = new PluginData(plugin);
+            JSONObject playerData = dataManager.initPlayer(player.getUniqueId());
+
+            if (!playerData.getBoolean("discordMute")) {
+                player.sendMessage(message);
+            }
+        }
+        Bukkit.getLogger().info("[Discraft] Broadcast: " + message);
     }
 }

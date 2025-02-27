@@ -25,6 +25,13 @@ chat_channel: "YOUR_CHAT_CHANNEL_ID"
 # This is the Discord channel ID where the console logs from the Minecraft server will be sent.
 console_channel: "YOUR_CONSOLE_CHANNEL_ID"
 
+# --------------------
+# Chat features
+# --------------------
+
+allow_profanity: true # Filters swear words using "AI ✨" (⚠ can have false-positives and slow the chat down a little)
+reactOnSuccess: true # Reacts with "📩" on a discord message when it successfully gets sent to the minecraft chat
+
 # -----------------------------
 # Additional Settings
 # -----------------------------
@@ -54,5 +61,4 @@ server_on: true
 server_off: true
 
 # Other:
-reactOnSuccess: true # Reacts with "📩" on a discord message when it successfully gets sent to the minecraft chat
 debug: false

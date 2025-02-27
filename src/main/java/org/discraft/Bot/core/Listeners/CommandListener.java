@@ -1,10 +1,7 @@
 package org.discraft.Bot.core.Listeners;
 
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import org.bukkit.Bukkit;
-import org.discraft.Bot.commands.control;
 import org.discraft.Bot.core.classes.SlashCommand;
 import org.discraft.Bot.core.handlers.Commands;
 
@@ -19,7 +16,6 @@ public class CommandListener extends ListenerAdapter {
                 return;
             }
         }
-
         event.reply("Unknown command!").setEphemeral(true).queue();
     }
 
