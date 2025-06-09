@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.discraft.Bot.core.classes.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.bukkit.Bukkit;
+import org.discraft.Discraft;
+
 import java.awt.Color;
 
 public class ping implements SlashCommand {
@@ -15,7 +17,7 @@ public class ping implements SlashCommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(SlashCommandInteractionEvent event, Discraft discraft) {
         double[] tpsRaw = Bukkit.getServer().getTPS();
         String tps = String.format("`%.2f`", tpsRaw[0]);
         int playerCount = Bukkit.getOnlinePlayers().size();
