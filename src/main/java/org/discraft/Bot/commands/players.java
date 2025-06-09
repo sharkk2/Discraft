@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.discraft.Bot.core.classes.SlashCommand;
+import org.discraft.Discraft;
 import org.discraft.PlayTimer;
 
 import java.awt.*;
@@ -35,7 +36,7 @@ public class players implements SlashCommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(SlashCommandInteractionEvent event, Discraft discraft) {
         List<Player> onlinePlayers = List.copyOf(Bukkit.getOnlinePlayers());
 
         if (onlinePlayers.isEmpty()) {
