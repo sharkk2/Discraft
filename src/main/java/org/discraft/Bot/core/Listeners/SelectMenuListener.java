@@ -42,7 +42,7 @@ public class SelectMenuListener extends ListenerAdapter {
     @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         if (event.getComponentId().equals("actions")) {
-            Discraft discraft = new Discraft();
+            Discraft discraft = Discraft.getDiscraft();
             List<String> admins = discraft.getConfig().getStringList("admins");
             if (!admins.contains(event.getUser().getId())) {
                 EmbedBuilder embed = new EmbedBuilder()
