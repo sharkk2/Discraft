@@ -15,6 +15,7 @@ public final class Discraft extends JavaPlugin {
     private Bot discordBot;
     private TextChannel channel;
     private TextChannel console_channel;
+    private static Discraft instance;
 
     public void executeCommand(String command) {
         Bukkit.getScheduler().runTask(this, () -> {
@@ -22,10 +23,13 @@ public final class Discraft extends JavaPlugin {
         });
     }
 
-
+    public static Discraft getDiscraft() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
+        instance = this;
         saveDefaultConfig();
         discordBot = new Bot(this);
         discordBot.start();
