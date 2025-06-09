@@ -152,8 +152,7 @@ public class control implements SlashCommand {
 
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
-       Discraft discraft = (Discraft) Bukkit.getPluginManager().getPlugin("Discraft");
+    public void execute(SlashCommandInteractionEvent event, Discraft discraft) {
        List<String> admins = discraft.getConfig().getStringList("admins");
        if (!admins.contains(event.getUser().getId())) {
            EmbedBuilder embed = new EmbedBuilder()
