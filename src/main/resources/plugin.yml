@@ -1,0 +1,16 @@
+name: Discraft
+version: '1.3'
+main: org.discraft.Discraft
+api-version: '1.21'
+authors: [sharkk2]
+description: A server-discord plugin that allows the minecraft server to communicate with a discord bot
+commands:
+  discordmute:
+    description: Toggle discord messages
+    usage: /discordmute
+    permission: discraft.discordmute
+    permission-message: You don't have permission to use this command.
+
+permissions:
+  discraft.discordmute:
+    default: true
