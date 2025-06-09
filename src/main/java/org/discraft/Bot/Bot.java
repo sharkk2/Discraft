@@ -41,7 +41,7 @@ public class Bot {
          Bukkit.getLogger().info("[Discraft] Logged into Discord as " + jda.getSelfUser().getName());
          Commands.registerCommands(jda);
 
-         jda.addEventListener(new CommandListener());
+         jda.addEventListener(new CommandListener(plugin));
          jda.addEventListener(new MessageListener(plugin, jda));
          jda.addEventListener(new ButtonInteractionListener());
          jda.addEventListener(new SelectMenuListener());
