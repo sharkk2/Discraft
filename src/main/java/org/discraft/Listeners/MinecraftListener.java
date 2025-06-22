@@ -11,6 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.Bukkit;
 import org.discraft.Discraft;
+import org.discraft.Filter;
 import org.discraft.PlayTimer;
 import org.discraft.PluginData;
 import org.json.JSONObject;
@@ -114,12 +115,16 @@ public class MinecraftListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
+
         String message = event.getMessage();
-
         if (message.length() > 2000) {return;}
-
         if (message.startsWith("!!")) {return;}
-
+        boolean shouldFilter = !plugin.getConfig().getBoolean("allow_profanity", false);
+        if (shouldFilter) {
+            Filter filter = new Filter();
+            message = filter.censor(message);
+            event.setMessage(message);
+        }
         eventPoster.Post(0, message, event.getPlayer());
     }
 

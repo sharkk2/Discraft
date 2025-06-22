@@ -56,7 +56,7 @@ public class MinecraftEventPoster {
 
                     case 0:
                         if (chat != true) {return;}
-                        String msg = "(" + player.getName() + "): " + message;
+                        String msg = "**(" + player.getName() + ")**: " + message;
                         if (msg.length() > 2000) {
                             return;
                         }

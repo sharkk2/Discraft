@@ -4,7 +4,7 @@
   <groupId>org.discraft</groupId>
   <artifactId>Discraft</artifactId>
   <name>Discraft</name>
-  <version>1.3</version>
+  <version>1.4</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>

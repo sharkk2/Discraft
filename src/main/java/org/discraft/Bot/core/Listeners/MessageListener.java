@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.discraft.Discraft;
 import org.bukkit.Bukkit;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.discraft.Filter;
 import org.discraft.PluginData;
 import org.json.JSONObject;
 
@@ -35,6 +36,7 @@ public class MessageListener extends ListenerAdapter {
         String consoleid = plugin.getConfig().getString("console_channel");
         boolean reactOnSuccess = plugin.getConfig().getBoolean("reactOnSuccess", true);
         boolean sendToMc = plugin.getConfig().getBoolean("discord_to_minecraft", true);
+        boolean shouldFilter = !plugin.getConfig().getBoolean("allow_profanity", false);
 
         if (!sendToMc) {
             return;
@@ -43,7 +45,6 @@ public class MessageListener extends ListenerAdapter {
         if (channelid == null || channelid.isEmpty()) {
             return;
         }
-
 
         long channelID = Long.parseLong(channelid);
 
@@ -59,19 +60,28 @@ public class MessageListener extends ListenerAdapter {
             if (channel != null) {
                if (message.getChannelId().equals(channel.getId())) {
                    String discordMessage = message.getContentRaw();
+                   String filtered = discordMessage;
+                   Filter filter = new Filter();
 
-                   // if its a reply:
+                   if (shouldFilter) {
+                       filtered = filter.censor(discordMessage);
+                   }
+
                    if (message.getMessageReference() != null) {
                        Message refMessage = message.getReferencedMessage();
-                       Broadcast("§8[Discord] §9" + message.getAuthor().getName() + " §7(replying to " + refMessage.getAuthor().getName() + ")§r: " + discordMessage);
+                       Broadcast("§8[Discord] §9" + message.getAuthor().getName() + " §7(replying to " + refMessage.getAuthor().getName() + ")§r: " + filtered);
                        message.addReaction(Emoji.fromUnicode("📩")).queue();
                    } else {
-                       Broadcast("§8[Discord] §9" + message.getAuthor().getName() + "§r: " + discordMessage);
+                       Broadcast("§8[Discord] §9" + message.getAuthor().getName() + "§r: " + filtered);
 
                    }
 
                    if (reactOnSuccess) {
                        message.addReaction(Emoji.fromUnicode("📩")).queue();
+                       if (shouldFilter) {
+                           List<String> flagged = filter.getFlagged(discordMessage);
+                           if (!flagged.isEmpty()) {message.addReaction(Emoji.fromUnicode("🤡")).queue();}
+                       } // FUCK ".queue()"
                    }
 
                } else if (message.getChannelId().equals(consoleid)) {
