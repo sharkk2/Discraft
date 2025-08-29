@@ -18,15 +18,16 @@ admins:
   - "77489499272839170"  # Another example of an admin ID
 guild_id: "1327003898338349128" # Discord server id
 
-chat_channel: "1387011007968448513"
+chat_channel: "1387011007968448513" # The important discord channel ids
 console_channel: "1387748260638363658"
 
-allow_profanity: false
+allow_profanity: false # Profanity filter
 
 # Bot profile settings
 status: ""
 activity_type: "1" # 0: Playing, 1: Listening, 2: Watching
 
+# Other settings
 chat_to_discord: true
 console_to_discord: true
 discord_to_minecraft: true
