@@ -1,4 +1,4 @@
-package org.discraft.Bot.commands;
+package org.discraft.bot.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,7 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.discraft.Bot.core.classes.SlashCommand;
+import org.discraft.bot.core.classes.SlashCommand;
 import java.awt.*;
 import java.util.List;
 import java.io.BufferedReader;
@@ -186,7 +186,6 @@ public class control implements SlashCommand {
        }
 
        event.replyEmbeds(embed)
-               .addActionRow(Button.secondary("refresh", "Refresh"))
                .addActionRow(StringSelectMenu.create("actions")
                        .setMaxValues(1)
                        .setMinValues(1)
@@ -215,6 +214,7 @@ public class control implements SlashCommand {
                                        .withEmoji(Emoji.fromUnicode("🔑"))
                        )
                        .build())
+               .addActionRow(Button.secondary("refresh", "Refresh"))
                .queue();
     }
 

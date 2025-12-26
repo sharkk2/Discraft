@@ -1,6 +1,5 @@
-package org.discraft.Bot.core.loops;
+package org.discraft.bot.core.loops;
 
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;

@@ -3,7 +3,6 @@
 # -----------------------------
 
 # Discord Bot Token
-# Your bot token is required for the bot to authenticate and connect to Discord.
 token: "YOUR_BOT_TOKEN_HERE"
 
 # Admins
@@ -22,19 +21,15 @@ guild_id: "GUILD_ID"
 chat_channel: "YOUR_CHAT_CHANNEL_ID"
 
 # Console Channel
-# This is the Discord channel ID where the console logs from the Minecraft server will be sent.
+# This is the Discord channel ID where the console logs from the Minecraft server will be sent. *optional
 console_channel: "YOUR_CONSOLE_CHANNEL_ID"
-
-# --------------------
-# Chat features
-# --------------------
 
 allow_profanity: true # Filters swear words using "AI ✨" (⚠ can have false-positives and slow the chat down a little)
 reactOnSuccess: true # Reacts with "📩" on a discord message when it successfully gets sent to the minecraft chat
 
-# -----------------------------
-# Additional Settings
-# -----------------------------
+chat_message: "**($player$)**: $message$" # The syntax of the incoming minecraft message sent in discord.
+# where $player$ is replaced with player name and same for $message$
+# example "$player$ is saying: $message$". *discord message markdown is supported.
 
 # Bot status
 # Leave as "" to view current minecraft server players
@@ -43,9 +38,7 @@ activity_type: "1" # 0: Playing, 1: Listening, 2: Watching
 
 # Whether to send Minecraft chat messages to Discord
 chat_to_discord: true
-
-# tip: starting your message with "!!" e.g "!!hey" the message will not be sent to discord/minecraft chat
-
+# *starting your message with "!!" e.g "!!hey" the message will not be sent to discord/minecraft chat
 # Whether to send Minecraft console messages to Discord
 console_to_discord: true
 

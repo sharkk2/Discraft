@@ -1,13 +1,14 @@
-package org.discraft.Bot;
+package org.discraft.bot;
 
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.discraft.Bot.core.Listeners.*;
-import org.discraft.Bot.core.loops.ConsoleReader;
-import org.discraft.Bot.core.loops.StatusUpdater;
+import org.discraft.bot.core.Listeners.*;
+import org.discraft.bot.core.handlers.Broadcaster;
+import org.discraft.bot.core.loops.ConsoleReader;
+import org.discraft.bot.core.loops.StatusUpdater;
 import org.bukkit.Bukkit;
-import org.discraft.Bot.core.handlers.Commands;
+import org.discraft.bot.core.handlers.Commands;
 import org.discraft.Discraft;
 
 public class Bot {

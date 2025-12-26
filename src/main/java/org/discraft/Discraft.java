@@ -3,10 +3,10 @@ package org.discraft;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.discraft.Bot.Bot;
+import org.discraft.bot.Bot;
 import org.bukkit.Bukkit;
-import org.discraft.Bot.core.handlers.MinecraftEventPoster;
-import org.discraft.Listeners.MinecraftListener;
+import org.discraft.bot.core.handlers.Broadcaster;
+import org.discraft.listeners.MinecraftListener;
 import org.discraft.commands.discordmute;
 
 import java.awt.*;
@@ -34,12 +34,11 @@ public final class Discraft extends JavaPlugin {
         discordBot = new Bot(this);
         discordBot.start();
 
-        MinecraftEventPoster eventPoster = new MinecraftEventPoster(this, discordBot.getJda());
-        Bukkit.getPluginManager().registerEvents(new MinecraftListener(eventPoster, this), this);
+        Broadcaster broadcaster = new Broadcaster(this, discordBot.getJda());
+        Bukkit.getPluginManager().registerEvents(new MinecraftListener(broadcaster, this), this);
 
         getCommand("discordmute").setExecutor(new discordmute(this));
-
-        eventPoster.Post(4, null, null);
+        broadcaster.Post(4, null, null);
 
         String rawchannelid = this.getConfig().getString("chat_channel");
         String rawconsoleid = this.getConfig().getString("console_channel");
@@ -61,5 +60,20 @@ public final class Discraft extends JavaPlugin {
             channel.sendMessageEmbeds(embed.build()).queue();
             console_channel.getManager().setTopic("Console is offline | Minecraft version: " + Bukkit.getServer().getVersion() + " | Bukkit: " + Bukkit.getBukkitVersion()).queue();
         }
+    }
+
+    public long[] getMemoryUsage() {
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        long usedMemory = totalMemory - freeMemory;
+        return new long[]{usedMemory, maxMemory};
+    }
+
+    public String getMemoryUsageFormatted() {
+        long[] mem = getMemoryUsage();
+        return String.format("%d MB / %d MB",
+                mem[0] / (1024 * 1024),
+                mem[1] / (1024 * 1024));
     }
 }

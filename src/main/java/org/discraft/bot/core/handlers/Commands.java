@@ -1,10 +1,10 @@
-package org.discraft.Bot.core.handlers;
+package org.discraft.bot.core.handlers;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.bukkit.Bukkit;
 import org.reflections.Reflections;
-import org.discraft.Bot.core.classes.SlashCommand;
+import org.discraft.bot.core.classes.SlashCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class Commands {
 
     public static void registerCommands(JDA jda) {
         try {
-            Reflections reflections = new Reflections("org.discraft.Bot.commands");
+            Reflections reflections = new Reflections("org.discraft.bot.commands");
             Set<Class<? extends SlashCommand>> classes = reflections.getSubTypesOf(SlashCommand.class);
 
             List<SlashCommandData> commandDataList = new ArrayList<>();

@@ -1,4 +1,4 @@
-package org.discraft.Bot.core.Listeners;
+package org.discraft.bot.core.Listeners;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -37,7 +37,6 @@ public class MessageListener extends ListenerAdapter {
         boolean reactOnSuccess = plugin.getConfig().getBoolean("reactOnSuccess", true);
         boolean sendToMc = plugin.getConfig().getBoolean("discord_to_minecraft", true);
         boolean shouldFilter = !plugin.getConfig().getBoolean("allow_profanity", false);
-
         if (!sendToMc) {
             return;
         }
@@ -47,7 +46,6 @@ public class MessageListener extends ListenerAdapter {
         }
 
         long channelID = Long.parseLong(channelid);
-
         String guid = plugin.getConfig().getString("guild_id");
 
         if (guid == null || guid.isEmpty()) {

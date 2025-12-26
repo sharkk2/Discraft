@@ -1,4 +1,4 @@
-package org.discraft.Bot.core.classes;
+package org.discraft.bot.core.classes;
 
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.discraft.Discraft;

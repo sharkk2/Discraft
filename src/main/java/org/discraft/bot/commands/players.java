@@ -1,4 +1,4 @@
-package org.discraft.Bot.commands;
+package org.discraft.bot.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.discraft.Bot.core.classes.SlashCommand;
+import org.discraft.bot.core.classes.SlashCommand;
 import org.discraft.Discraft;
 import org.discraft.PlayTimer;
 
@@ -17,22 +17,6 @@ public class players implements SlashCommand {
     @Override
     public SlashCommandData getCommandData() {
         return Commands.slash("players", "Shows all the current online players");
-    }
-
-    private String getPlayTime(long joinTime) {
-        long currentTime = System.currentTimeMillis();
-        long playTimeMillis = currentTime - joinTime;
-
-        long seconds = (playTimeMillis / 1000) % 60;
-        long minutes = (playTimeMillis / (1000 * 60)) % 60;
-        long hours = (playTimeMillis / (1000 * 60 * 60)) % 24;
-
-        String playtimeFormatted = (hours > 0 ? "`" + hours + "`h " : "") +
-                (minutes > 0 ? "`" + minutes + "`m " : "") +
-                "`" + seconds + "`s";
-
-
-        return playtimeFormatted;
     }
 
     @Override
@@ -46,16 +30,15 @@ public class players implements SlashCommand {
                     .setColor(color);
 
             event.replyEmbeds(embed.build()).setEphemeral(true).queue();
-
             return;
         }
         PlayTimer timer = new PlayTimer();
         String embedDesc = "";
         for (Player player : onlinePlayers) {
-            String playtime = getPlayTime(timer.getPlaytime(player.getUniqueId()));
-            String playerString = "**" + player.getName() + "**\n> Latency: `" + player.getPing() + "`ms\n> Has been playing for: " + playtime + "\n";
+            String playtime = timer.getPlayTimeFormatted(player.getUniqueId());
+            String playerString = "**" + player.getName() + "**: `latency: " + player.getPing() + "ms - play time: " + playtime + "`\n";
             if (player.getName().equals("sharkkk2")) {
-                playerString = "**" + player.getName() + "**\n> Latency: `" + player.getPing() + "`ms\n> Has been playing for: " + playtime + "\n> Player is a sigma: **Yes**\n";
+                playerString = "**" + player.getName() + "**: `latency: " + player.getPing() + "ms - play time: " + playtime + " - sigma gigachad? yes`\n";
             }
             embedDesc += playerString;
         }

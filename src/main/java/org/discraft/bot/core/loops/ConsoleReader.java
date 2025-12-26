@@ -1,4 +1,4 @@
-package org.discraft.Bot.core.loops;
+package org.discraft.bot.core.loops;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import net.dv8tion.jda.api.JDA;
+import org.discraft.Discraft;
+import org.discraft.bot.core.handlers.Broadcaster;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +16,7 @@ import java.util.stream.Stream;
 
 public class ConsoleReader {
     private JavaPlugin plugin;
+    private Broadcaster broadcaster;
     private JDA jda;
     private String lastLine = "";
     private Message lastMessage;
@@ -23,6 +26,7 @@ public class ConsoleReader {
     public ConsoleReader(JavaPlugin plugin, JDA jda) {
         this.plugin = plugin;
         this.jda = jda;
+        this.broadcaster = new Broadcaster((Discraft) plugin, jda);
     }
 
     public void start() {
@@ -37,13 +41,10 @@ public class ConsoleReader {
 
                 try (Stream<String> lines = Files.lines(logFile)) {
                     String latestLine = lines.reduce((first, second) -> second).orElse(null);
-
                     if (latestLine != null && !latestLine.equals(lastLine)) {
                         lastLine = latestLine;
                         TextChannel channel = jda.getTextChannelById(channelId);
-
                         if (channel == null) return;
-
                         if (lastMessage != null && !rawContent.isEmpty()) {
                             if ((rawContent.length() + latestLine.length()) < 1994) {
                                 rawContent += "\n" + latestLine;

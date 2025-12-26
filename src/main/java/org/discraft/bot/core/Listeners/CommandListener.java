@@ -1,10 +1,9 @@
-package org.discraft.Bot.core.Listeners;
+package org.discraft.bot.core.Listeners;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import org.discraft.Bot.core.classes.SlashCommand;
-import org.discraft.Bot.core.handlers.Commands;
+import org.discraft.bot.core.classes.SlashCommand;
+import org.discraft.bot.core.handlers.Commands;
 import org.discraft.Discraft;
 
 public class CommandListener extends ListenerAdapter {

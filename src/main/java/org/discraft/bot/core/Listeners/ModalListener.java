@@ -1,4 +1,4 @@
-package org.discraft.Bot.core.Listeners;
+package org.discraft.bot.core.Listeners;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;

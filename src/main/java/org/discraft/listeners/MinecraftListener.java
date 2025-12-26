@@ -1,4 +1,4 @@
-package org.discraft.Listeners;
+package org.discraft.listeners;
 
 
 import org.bukkit.event.EventHandler;
@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.discraft.Bot.core.handlers.MinecraftEventPoster;
+import org.discraft.bot.core.handlers.Broadcaster;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.Bukkit;
@@ -29,7 +29,7 @@ import org.json.JSONObject;
 
 public class MinecraftListener implements Listener {
 
-    private final MinecraftEventPoster eventPoster;
+    private final Broadcaster broadcaster;
     private final Discraft plugin;
 
     private static final JSONObject advancements = new JSONObject("""
@@ -92,6 +92,10 @@ public class MinecraftListener implements Listener {
     }
     """);
 
+    public MinecraftListener(Broadcaster broadcaster, Discraft plugin) {
+        this.broadcaster = broadcaster;
+        this.plugin = plugin;
+    }
 
     private JSONObject getAdvancement(String key) {
         try {
@@ -108,10 +112,7 @@ public class MinecraftListener implements Listener {
         }
     }
 
-    public MinecraftListener(MinecraftEventPoster eventPoster, Discraft plugin) {
-        this.eventPoster = eventPoster;
-        this.plugin = plugin;
-    }
+
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -125,7 +126,7 @@ public class MinecraftListener implements Listener {
             message = filter.censor(message);
             event.setMessage(message);
         }
-        eventPoster.Post(0, message, event.getPlayer());
+        broadcaster.Post(0, message, event.getPlayer());
     }
 
 
@@ -138,7 +139,7 @@ public class MinecraftListener implements Listener {
 
         JSONObject data = dataManager.initPlayer(event.getPlayer().getUniqueId());
 
-        eventPoster.Post(1, message, event.getPlayer());
+        broadcaster.Post(1, message, event.getPlayer());
         PlayTimer timer = new PlayTimer();
         timer.addTimer(event.getPlayer().getUniqueId());
     }
@@ -147,7 +148,7 @@ public class MinecraftListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         String message = "Has left the game";
-        eventPoster.Post(2, message, event.getPlayer());
+        broadcaster.Post(2, message, event.getPlayer());
         PlayTimer timer = new PlayTimer();
         timer.removeTimer(event.getPlayer().getUniqueId());
     }
@@ -167,16 +168,16 @@ public class MinecraftListener implements Listener {
 
 
         if (type.equals("normal")) {
-            eventPoster.Post(3, "Has made the advancement " + name + "!", event.getPlayer());
+            broadcaster.Post(3, "Has made the advancement " + name + "!", event.getPlayer());
         } else {
-            eventPoster.Post(7, "Has done the challenge " + name + "!", event.getPlayer());
+            broadcaster.Post(7, "Has done the challenge " + name + "!", event.getPlayer());
         }
 
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        eventPoster.Post(6, event.getDeathMessage(), event.getPlayer());
+        broadcaster.Post(6, event.getDeathMessage(), event.getPlayer());
     }
 
 }

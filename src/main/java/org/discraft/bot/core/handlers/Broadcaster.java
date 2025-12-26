@@ -1,4 +1,4 @@
-package org.discraft.Bot.core.handlers;
+package org.discraft.bot.core.handlers;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.bukkit.Bukkit;
 import org.discraft.Discraft;
@@ -9,13 +9,38 @@ import org.bukkit.entity.Player;
 
 import java.awt.*;
 
-public class MinecraftEventPoster {
+public class Broadcaster {
     private final Discraft plugin;
     private final JDA jda;
 
-    public MinecraftEventPoster(Discraft plugin, JDA jda) {
+    public Broadcaster(Discraft plugin, JDA jda) {
         this.plugin = plugin;
         this.jda = jda;
+    }
+
+    public void announce(String message, int mtype) {
+        String rawchannelid = plugin.getConfig().getString("chat_channel");
+        long channelID = Long.parseLong(rawchannelid);
+        String guid = plugin.getConfig().getString("guild_id");
+        if (guid == null || guid.isEmpty()) {
+            return;
+        }
+
+        Guild guild = jda.getGuildById(guid);
+        if (guild != null) {
+            TextChannel channel = guild.getTextChannelById(channelID);
+            if (channel != null) {
+                Color color;
+                switch (mtype) {
+                    case 0: color = new Color(37, 141, 231); break;
+                    case 1: color = new Color(230, 75, 64); break;
+                    case 2: color = new Color(243, 130, 47); break;
+                    default: color = new Color(37, 141, 231); break;
+                }
+                EmbedBuilder embed = new EmbedBuilder().setDescription(message).setColor(color);
+                channel.sendMessageEmbeds(embed.build()).queue();
+            }
+        }
     }
 
     public void Post(int etype, String message, Player player) {
@@ -53,17 +78,19 @@ public class MinecraftEventPoster {
                   Type 6: Death
                  */
                 switch (etype) {
-
                     case 0:
-                        if (chat != true) {return;}
-                        String msg = "**(" + player.getName() + ")**: " + message;
+                        if (!chat) {return;}
+                        String msg = plugin.getConfig().getString("chat_message");
+                        if (msg == null) {return;}
+                        msg = msg.replace("$player$", player.getName());
+                        msg = msg.replace("$message$", message);
                         if (msg.length() > 2000) {
                             return;
                         }
                         channel.sendMessage(msg).queue();
                         break;
                     case 1:
-                        if (PlayerJoin != true) {return;}
+                        if (!PlayerJoin) {return;}
                         Color color = new Color(230, 216, 71);
                         EmbedBuilder embed = new EmbedBuilder()
                                 .setAuthor(player.getName(), null, "https://mineskin.eu/helm/" + player.getName())
@@ -73,7 +100,7 @@ public class MinecraftEventPoster {
                         channel.sendMessageEmbeds(embed.build()).queue();
                         break;
                     case 2:
-                        if (PlayerLeave != true) {return;}
+                        if (!PlayerLeave) {return;}
                         Color color2 = new Color(230, 75, 64);
                         EmbedBuilder embed2 = new EmbedBuilder()
                                 .setAuthor(player.getName(), null, "https://mineskin.eu/helm/" + player.getName())
@@ -83,7 +110,7 @@ public class MinecraftEventPoster {
                         channel.sendMessageEmbeds(embed2.build()).queue();
                         break;
                     case 3:
-                        if (PlayerAdvancements != true) {return;}
+                        if (!PlayerAdvancements) {return;}
                         Color color3 = new Color(243, 130, 47);
                         EmbedBuilder embed3 = new EmbedBuilder()
                                 .setAuthor(player.getName(), null, "https://mineskin.eu/helm/" + player.getName())
@@ -93,7 +120,7 @@ public class MinecraftEventPoster {
                         channel.sendMessageEmbeds(embed3.build()).queue();
                         break;
                     case 4:
-                        if (ServerOn != true) {return;}
+                        if (!ServerOn) {return;}
                         Color color4 = new Color(71, 230, 111);
                         EmbedBuilder embed4 = new EmbedBuilder()
                                 .setAuthor("Server is online ✅")
@@ -108,7 +135,7 @@ public class MinecraftEventPoster {
                         }
                         break;
                     case 5:
-                        if (ServerOff != true) {return;}
+                        if (!ServerOff) {return;}
                         Color color5 = new Color(230, 75, 64);
                         EmbedBuilder embed5 = new EmbedBuilder()
                                 .setAuthor("Server stopped ):")
@@ -117,7 +144,7 @@ public class MinecraftEventPoster {
                         channel.sendMessageEmbeds(embed5.build()).queue();
                         break;
                     case 6:
-                        if (PlayerDeath != true) {return;}
+                        if (!PlayerDeath) {return;}
                         Color color6 = new Color(89, 84, 84);
                         EmbedBuilder embed6 = new EmbedBuilder()
                                 .setAuthor(player.getName(), null, "https://mineskin.eu/helm/" + player.getName())
@@ -127,7 +154,7 @@ public class MinecraftEventPoster {
                         channel.sendMessageEmbeds(embed6.build()).queue();
                         break;
                     case 7:  // special challenge advancement type "i should have just made the color a parameter"
-                        if (PlayerAdvancements != true) {return;}
+                        if (!PlayerAdvancements) {return;}
                         Color color7 = new Color(118, 67, 220);
                         EmbedBuilder embed7 = new EmbedBuilder()
                                 .setAuthor(player.getName(), null, "https://mineskin.eu/helm/" + player.getName())
@@ -140,8 +167,5 @@ public class MinecraftEventPoster {
                 }
             }
         }
-
-        
-
     }
 }
