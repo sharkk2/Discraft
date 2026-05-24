@@ -3,6 +3,7 @@ package org.discraft.bot.core.handlers;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.bukkit.Bukkit;
+import org.discraft.Discraft;
 import org.reflections.Reflections;
 import org.discraft.bot.core.classes.SlashCommand;
 
@@ -33,5 +34,14 @@ public class Commands {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    /* ts only adds the command to the guild_id set in the config *primarily used for the API */
+    public static void registerCommand(Discraft discraft, SlashCommand command) {
+        commandInstances.add(command);
+        SlashCommandData commandData = command.getCommandData();
+        String guildId = discraft.getConfig().getString("guild_id");
+        discraft.getJDA().upsertCommand(commandData).queue(cmd ->
+                Bukkit.getLogger().info("[Discraft] Registered /" + commandData.getName())
+        );
     }
 }
