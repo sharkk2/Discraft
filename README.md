@@ -168,7 +168,7 @@ Represents a Discord message.
 | `react(String emoji)` | `void` | Reacts to the message with an emoji |
 | `reply(String message)` | `void` | Replies to the message |
 
-**Example — fetching and replying to a message:**
+**Example: fetching and replying to a message:**
 
 ```java
 DiscraftAPI api = DiscraftAPI.get();
