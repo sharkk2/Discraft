@@ -82,6 +82,7 @@ discraftAPI.registerCommand(
     }
 );
 ```
+*Commands register only for the guild who's ID is set in the discraft config!*
 
 ### CommandOption
 
