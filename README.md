@@ -78,7 +78,7 @@ discraftAPI.registerCommand(
     "Echo a message",
     List.of(new CommandOption("toecho", CommandOption.STRING, true)),
     (options, ctx) -> {
-        ctx.respond(options.get(0).getAsString() + "\n\nFrom: " + ctx.user.mention());
+        ctx.respond(options.get(0).getAsString() + "\n\nFrom: " + ctx.getUser().mention());
     }
 );
 ```
