@@ -2,6 +2,9 @@ package org.discraft;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.plugin.ServicePriority;
@@ -11,7 +14,11 @@ import org.discraft.api.CommandOption;
 import org.discraft.api.DiscordCommand;
 import org.discraft.api.DiscraftAPI;
 import org.discraft.api.classes.DiscraftChannel;
+import org.discraft.api.classes.DiscraftMember;
+import org.discraft.api.classes.DiscraftRole;
 import org.discraft.api.classes.DiscraftUser;
+import org.discraft.api.classes.actions.ChannelActions;
+import org.discraft.api.classes.actions.UserActions;
 import org.discraft.bot.Bot;
 import org.bukkit.Bukkit;
 import org.discraft.bot.core.handlers.Broadcaster;
@@ -21,6 +28,7 @@ import org.discraft.listeners.MinecraftListener;
 import org.discraft.commands.discordmute;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -47,11 +55,9 @@ public final class Discraft extends JavaPlugin implements DiscraftAPI{
         getServer().getServicesManager().register(DiscraftAPI.class, this,this, ServicePriority.Normal);
         discordBot = new Bot(this);
         discordBot.start();
-
+        getCommand("discordmute").setExecutor(new discordmute(this));
         Broadcaster broadcaster = new Broadcaster(this, discordBot.getJda());
         Bukkit.getPluginManager().registerEvents(new MinecraftListener(broadcaster, this), this);
-
-        getCommand("discordmute").setExecutor(new discordmute(this));
         broadcaster.Post(4, null, null);
 
         String rawchannelid = this.getConfig().getString("chat_channel");
@@ -107,16 +113,33 @@ public final class Discraft extends JavaPlugin implements DiscraftAPI{
     @Override
     public DiscraftChannel getChannel(long id) {
         TextChannel channel = discordBot.getJda().getTextChannelById(id);
-        if (channel == null) {throw new IllegalArgumentException("No channel found with id: " + id);}
-        return new DiscraftChannel(channel.getIdLong(), channel.getName(), message -> channel.sendMessage(message).queue(), getJDA());
+        if (channel == null) {return null;}
+        return new DiscraftChannel(channel.getIdLong(), channel.getGuild().getIdLong(), channel.getName(), DiscraftChannel._bakeActions(channel), getJDA());
     }
 
     @Override
     public DiscraftUser getUser(long id) {
-        User user = discordBot.getJda().getUserById(id);
-        if (user == null) {throw new IllegalArgumentException("No user found with id: " + id);}
-        return new DiscraftUser(user.getIdLong(), user.getName(), user.getAvatarUrl());
+        try {
+            User user = discordBot.getJda().retrieveUserById(id).complete();
+            if (user == null) {return null;}
+            UserActions userActions = DiscraftUser._bakeActions(user);
+            return new DiscraftUser(user.getIdLong(), user.getName(), user.getAvatarUrl(), userActions);
+        } catch (Exception e) {return null;}
     }
+
+    @Override
+    public DiscraftMember getMember(long guildID, long userID) {
+        Guild guild = discordBot.getJda().getGuildById(guildID);
+        if (guild == null) {throw new IllegalArgumentException("No guild found with id: " + guildID);}
+        Member member = guild.getMemberById(userID);
+        if (member == null) {throw new IllegalArgumentException("No member found with id: " + userID);}
+        List<DiscraftRole> roles = new ArrayList<>();
+        for (Role role : member.getRoles()) {roles.add(CommandAdapter.toDiscraftRole(role));}
+        return new DiscraftMember(member.getIdLong(), member.getEffectiveName(), member.getAvatarUrl(), member.getNickname(), roles, DiscraftMember._bakeActions(member));
+
+
+    }
+
 
 
 }

@@ -27,29 +27,36 @@ public class Bot {
             return;
          }
 
-
-
          jda = JDABuilder.createDefault(token)
                  .enableIntents(
-                         GatewayIntent.GUILD_MESSAGES,
                          GatewayIntent.GUILD_MESSAGES,
                          GatewayIntent.MESSAGE_CONTENT,
                          GatewayIntent.GUILD_MEMBERS
                  )
+                 .addEventListeners(new ReadyListener(plugin))
                  .build();
 
-         jda.awaitReady();
-         Bukkit.getLogger().info("[Discraft] Logged into Discord as " + jda.getSelfUser().getName());
-         Commands.registerCommands(jda);
+          jda = JDABuilder.createDefault(token)
+                  .enableIntents(
+                          GatewayIntent.GUILD_MESSAGES,
+                          GatewayIntent.MESSAGE_CONTENT,
+                          GatewayIntent.GUILD_MEMBERS
+                  )
+                  .build();
 
-         jda.addEventListener(new CommandListener(plugin));
-         jda.addEventListener(new MessageListener(plugin, jda));
-         jda.addEventListener(new ButtonInteractionListener());
-         jda.addEventListener(new SelectMenuListener());
-         jda.addEventListener(new ModalListener());
+          jda.awaitReady();
+          Bukkit.getLogger().info("[Discraft] Logged into Discord as " + jda.getSelfUser().getName());
+          Commands.registerCommands(jda);
 
-         new StatusUpdater(plugin, jda).start();
-         new ConsoleReader(plugin, jda).start();
+          jda.addEventListener(new CommandListener(plugin));
+          jda.addEventListener(new MessageListener(plugin, jda));
+          jda.addEventListener(new ButtonInteractionListener());
+          jda.addEventListener(new SelectMenuListener());
+          jda.addEventListener(new ModalListener());
+
+          new StatusUpdater(plugin, jda).start();
+          new ConsoleReader(plugin, jda).start();
+
       } catch (Exception e) {
          Bukkit.getLogger().warning("[Discraft] Failed to create a bot instance: " + e.getMessage());
       }

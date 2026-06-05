@@ -89,6 +89,8 @@ public class MessageListener extends ListenerAdapter {
                        return;
                    }
                    String command = message.getContentRaw();
+                   message.addReaction(Emoji.fromUnicode("✅")).queue();
+
                    plugin.executeCommand(command);
                }
             }

@@ -1,5 +1,10 @@
 package org.discraft.api.classes;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.discraft.api.classes.actions.MessageActions;
+
 import java.util.function.Consumer;
 
 public class DiscraftMessage {
@@ -8,23 +13,22 @@ public class DiscraftMessage {
     private final DiscraftUser author;
     private final String content;
     private final long timeCreated;
-    private final Runnable deleter;
-    private final Consumer<String> reactor;
-    private final Consumer<String> replier;
+    private final MessageActions actions;
+
 
     public DiscraftMessage(
             long id,
             DiscraftChannel channel, DiscraftUser author,
             String content,
             long timeCreated,
-            Runnable deleter, Consumer<String> reactor, Consumer<String> replier
+            MessageActions actions
     ) {
         this.id = id;
         this.channel = channel;
         this.author = author;
         this.content = content;
         this.timeCreated = timeCreated;
-        this.deleter = deleter; this.reactor = reactor; this.replier = replier;
+        this.actions = actions;
     }
 
     public long getID() {return id;}
@@ -32,7 +36,17 @@ public class DiscraftMessage {
     public DiscraftUser getAuthor() {return author;}
     public String getContent() {return content;}
     public long getTimeCreated() {return timeCreated;}
-    public void delete() {deleter.run();}
-    public void react(String emoji) {reactor.accept(emoji);}
-    public void reply(String message) {replier.accept(message);}
+    public void delete() {actions.deleter().run();}
+    public void addReaction(String emoji) {actions.reactor().accept(emoji);}
+    public void removeReaction(String emoji) {actions.dereactor().accept(emoji);}
+    public void reply(String message) {actions.replier().accept(message);}
+
+    public static MessageActions _bakeActions(Message message) {
+        return new MessageActions(
+                () -> message.delete().queue(),
+                emoji -> message.addReaction(Emoji.fromUnicode(emoji)).queue(),
+                emoji -> message.removeReaction(Emoji.fromUnicode(emoji)).queue(),
+                reply -> message.reply(reply).queue()
+        );
+    }
 }
