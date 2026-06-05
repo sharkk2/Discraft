@@ -9,7 +9,7 @@ A discord-minecraft paper plugin.
 5. Choose to toggle the discord messages from minecraft using the discordmute command
 6. Profanity filter
 7. A Discord integration API for other plugins
-   
+
 # Configuration
 Inside the server's plugins folder, a Discraft folder will be generated inside is a `config.yml` file
 ```yml
@@ -65,6 +65,7 @@ DiscraftAPI discraftAPI = DiscraftAPI.get();
 | `registerCommand(String name, String description, List<CommandOption> options, BiConsumer<List<CommandOption>, CommandContext> callback)` | Registers a slash command |
 | `getChannel(long id)` | Returns a `DiscraftChannel` by ID |
 | `getUser(long id)` | Returns a `DiscraftUser` by ID |
+| `getMember(long guildID, long userID)` | Returns a `DiscraftMember` by guild and user ID. Throws `IllegalArgumentException` if either isn't found |
 
 ---
 
@@ -76,42 +77,48 @@ DiscraftAPI discraftAPI = DiscraftAPI.get();
 discraftAPI.registerCommand(
     "echo",
     "Echo a message",
-    List.of(new CommandOption("toecho", CommandOption.STRING, true)),
+    List.of(new CommandOption("toecho", CommandOption.OPTION_TYPE.STRING, true)),
     (options, ctx) -> {
-        ctx.respond(options.get(0).getAsString() + "\n\nFrom: " + ctx.getUser().mention());
+        ctx.respond(options.get(0).getAsString() + "\n\nFrom: " + ctx.getUser().mention(), false);
     }
 );
 ```
-*Commands register only for the guild who's ID is set in the discraft config!*
+*Commands register only for the guild whose ID is set in the discraft config!*
 
 ### CommandOption
 
 Create an option with:
 
 ```java
-new CommandOption(String name, int type, boolean required)
+new CommandOption(String name, CommandOption.OPTION_TYPE type, boolean required)
 ```
 
 **Option types:**
 
 | Constant | Description |
 |----------|-------------|
-| `CommandOption.STRING` | Text value |
-| `CommandOption.INTEGER` | Integer value |
-| `CommandOption.BOOLEAN` | True/false value |
+| `CommandOption.OPTION_TYPE.STRING` | Text value |
+| `CommandOption.OPTION_TYPE.INTEGER` | Integer value |
+| `CommandOption.OPTION_TYPE.BOOLEAN` | True/false value |
+| `CommandOption.OPTION_TYPE.USER` | Discord user |
+| `CommandOption.OPTION_TYPE.CHANNEL` | Discord channel |
+| `CommandOption.OPTION_TYPE.ROLE` | Discord role |
 
 **Methods:**
 
 | Method | Description |
 |--------|-------------|
-| `getName()` / `setName(String)` | Get or set the option name |
-| `getType()` / `setType(int)` | Get or set the option type |
-| `setDescription(String)` | Set an optional description |
+| `getName()` | Get the option name |
+| `getType()` | Get the option type |
+| `setDescription(String)` | Set an optional description (returns `CommandOption` for chaining) |
+| `getDescription()` | Get the option description |
 | `isRequired()` | Whether the option is required |
 | `getValue()` | Raw value as `Object` (use in callbacks) |
 | `getAsString()` | Value cast to `String` |
-| `getAsInteger()` | Value cast to `Integer` |
-| `getAsBoolean()` | Value cast to `Boolean` |
+| `getAsInt()` | Value cast to `int` |
+| `getAsBoolean()` | Value cast to `boolean` |
+| `getAsUser()` | Value cast to `DiscraftUser` |
+| `getAsChannel()` | Value cast to `DiscraftChannel` |
 
 ### CommandContext
 
@@ -122,7 +129,7 @@ Passed as the second argument to your command callback. Used to inspect and resp
 | `getUser()` | `DiscraftUser` | The user who triggered the command |
 | `getChannel()` | `DiscraftChannel` | The channel where the command was triggered |
 | `getInteractionTime()` | `long` | Epoch seconds of when the interaction occurred |
-| `respond(String msg)` | `void` | Sends a response to the command |
+| `respond(String message, boolean ephemeral)` | `void` | Sends a response to the command. Pass `true` for ephemeral to make it only visible to the user who triggered it |
 
 ---
 
@@ -138,6 +145,56 @@ Represents a Discord user.
 | `getName()` | `String` | The user's username |
 | `getAvatarURL()` | `String` | URL to the user's avatar |
 | `mention()` | `String` | A mention string, e.g. `@username` |
+| `setNickName(String nickName, long guildID)` | `void` | Sets the user's nickname in the specified guild |
+| `sendDM(String message)` | `void` | Sends a direct message to the user |
+
+---
+
+### DiscraftMember
+
+Represents a Discord guild member (a user within a specific server).
+
+| Method | Return Type | Description |
+|--------|-------------|-------------|
+| `getID()` | `long` | The member's Discord ID |
+| `getName()` | `String` | The member's username |
+| `getAvatarURL()` | `String` | URL to the member's avatar |
+| `getNickname()` | `String` | The member's server nickname |
+| `getRoles()` | `List<DiscraftRole>` | The member's roles in the guild |
+| `mention()` | `String` | A mention string, e.g. `@username` |
+| `setNickname(String nickname)` | `void` | Sets the member's server nickname |
+| `sendDM(String message)` | `void` | Sends a direct message to the member |
+| `addRole(DiscraftRole role)` | `void` | Adds a role to the member |
+| `removeRole(DiscraftRole role)` | `void` | Removes a role from the member |
+
+---
+
+### DiscraftRole
+
+Represents a Discord role in a guild.
+
+| Method | Return Type | Description |
+|--------|-------------|-------------|
+| `getID()` | `long` | The role's Discord ID |
+| `getGuildID()` | `long` | The ID of the guild this role belongs to |
+| `getName()` | `String` | The role's name |
+| `getColor()` | `int` | The role's color as an RGB integer |
+| `getPermissionRaw()` | `long` | The raw permission bitfield |
+| `getPosition()` | `int` | The role's position in the hierarchy |
+| `delete()` | `void` | Deletes the role |
+
+**Permissions:**
+
+Use `DiscraftRole.Permission.fromRaw(long raw)` to convert a raw permission bitfield into a set of `Permission` enum constants:
+
+```java
+EnumSet<DiscraftRole.Permission> perms = DiscraftRole.Permission.fromRaw(role.getPermissionRaw());
+if (perms.contains(DiscraftRole.Permission.ADMINISTRATOR)) {
+    // do something
+}
+```
+
+Available `Permission` values: `CREATE_INSTANT_INVITE`, `KICK_MEMBERS`, `BAN_MEMBERS`, `ADMINISTRATOR`, `MANAGE_CHANNELS`, `MANAGE_GUILD`, `ADD_REACTIONS`, `VIEW_AUDIT_LOG`, `VIEW_CHANNEL`, `SEND_MESSAGES`, `SEND_TTS_MESSAGES`, `MANAGE_MESSAGES`, `EMBED_LINKS`, `ATTACH_FILES`, `READ_MESSAGE_HISTORY`, `MENTION_EVERYONE`, `USE_EXTERNAL_EMOJIS`, `CONNECT`, `SPEAK`, `MUTE_MEMBERS`, `DEAFEN_MEMBERS`, `MOVE_MEMBERS`, `CHANGE_NICKNAME`, `MANAGE_NICKNAMES`, `MANAGE_ROLES`, `MANAGE_WEBHOOKS`, `MANAGE_EMOJIS`, `USE_SLASH_COMMANDS`, `MANAGE_THREADS`, `CREATE_PUBLIC_THREADS`, `CREATE_PRIVATE_THREADS`, `SEND_MESSAGES_IN_THREADS`, `MODERATE_MEMBERS`
 
 ---
 
@@ -148,9 +205,21 @@ Represents a Discord channel.
 | Method | Return Type | Description |
 |--------|-------------|-------------|
 | `getID()` | `long` | The channel's Discord ID |
+| `getGuildID()` | `long` | The ID of the guild this channel belongs to |
 | `getName()` | `String` | The channel's name |
 | `sendMessage(String message)` | `void` | Sends a message to the channel |
-| `getMessage(long messageID, Consumer<DiscraftMessage> callback)` | `void` | Fetches a message by ID and passes it to the callback |
+| `getMessage(long messageID)` | `CompletableFuture<DiscraftMessage>` | Fetches a message by ID asynchronously |
+
+**Example: fetching and replying to a message:**
+
+```java
+DiscraftAPI api = DiscraftAPI.get();
+
+api.getChannel(123456789L).getMessage(987654321L).thenAccept(message -> {
+    System.out.println(message.getAuthor().getName() + ": " + message.getContent());
+    message.reply("Got your message!");
+});
+```
 
 ---
 
@@ -166,16 +235,6 @@ Represents a Discord message.
 | `getContent()` | `String` | The text content of the message |
 | `getTimeCreated()` | `long` | Epoch seconds of when the message was created |
 | `delete()` | `void` | Deletes the message |
-| `react(String emoji)` | `void` | Reacts to the message with an emoji |
+| `addReaction(String emoji)` | `void` | Reacts to the message with an emoji |
+| `removeReaction(String emoji)` | `void` | Removes a reaction from the message |
 | `reply(String message)` | `void` | Replies to the message |
-
-**Example: fetching and replying to a message:**
-
-```java
-DiscraftAPI api = DiscraftAPI.get();
-
-api.getChannel(123456789L).getMessage(987654321L, message -> {
-    System.out.println(message.getAuthor().getName() + ": " + message.getContent());
-    message.reply("Got your message!");
-});
-```
