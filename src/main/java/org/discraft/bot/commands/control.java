@@ -108,13 +108,20 @@ public class control implements SlashCommand {
                 default -> "Backrooms (unknown)";
             };
 
-            String coords = "X: `" + Math.round(player.getX()) + "` Y: `" + Math.round(player.getY()) + "` Z:`" + Math.round(player.getZ()) + "`";
+            int ping;
+            try {
+                ping = player.getPing();
+            } catch (NoSuchMethodError e) {
+                ping = -1;
+            }
+
+            String coords = "X: `" + Math.round(player.getLocation().getX()) + "` Y: `" + Math.round(player.getLocation().getY()) + "` Z:`" + Math.round(player.getLocation().getZ()) + "`";
             EmbedBuilder embed = new EmbedBuilder()
                     .setAuthor(player.getName(), null, "https://mineskin.eu/helm/" + player.getName())
                     .setTitle("Player data")
                     .setColor(new Color(71, 230, 111))
                     .setDescription(
-                            "**Player UUID**: `" + player.getUniqueId() + "`\n**IP**: `" + ip + " (" + cc + ")`\n**Ping**: `" + player.getPing() + "`ms\n" + "**Dimension**: " + dimension +
+                            "**Player UUID**: `" + player.getUniqueId() + "`\n**IP**: `" + ip + " (" + cc + ")`\n**Ping**: `" + ping + "`ms\n" + "**Dimension**: " + dimension +
                             "\n**Is OP**: " + ((player.isOp()) ? "Yes":"No") + "\n**Health**: " + hearts + "\n**Hunger**: " + food + "\n**Coords**: " + coords +"\n**Play time**: " + playtime
                     );
 

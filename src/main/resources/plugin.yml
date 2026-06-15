@@ -1,5 +1,5 @@
 name: Discraft
-version: '1.5.1'
+version: '1.5.2'
 main: org.discraft.Discraft
 api-version: '1.21'
 authors: [sharkk2]

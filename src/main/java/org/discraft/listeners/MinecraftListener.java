@@ -155,29 +155,28 @@ public class MinecraftListener implements Listener {
 
     @EventHandler
     public void onPlayerAdvancement(PlayerAdvancementDoneEvent event) {
-        if (event.getAdvancement().getDisplay() == null) {
-            return;
-        }
         String key = event.getAdvancement().getKey().getKey();
         JSONObject advancement = getAdvancement(key);
-
-        if (advancement == null) {return;}
+        if (advancement == null) return;
 
         String name = advancement.getString("name");
         String type = advancement.getString("type");
 
-
-        if (type.equals("normal")) {
+        if ("normal".equals(type)) {
             broadcaster.Post(3, "Has made the advancement " + name + "!", event.getPlayer());
         } else {
             broadcaster.Post(7, "Has done the challenge " + name + "!", event.getPlayer());
         }
-
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        broadcaster.Post(6, event.getDeathMessage(), event.getPlayer());
+        String message = event.getDeathMessage();
+        if (message == null) {
+            message = event.getEntity().getName() + " died";
+        }
+
+        broadcaster.Post(6, message, event.getEntity());
     }
 
 }

@@ -59,7 +59,7 @@ public final class Discraft extends JavaPlugin implements DiscraftAPI{
         Broadcaster broadcaster = new Broadcaster(this, discordBot.getJda());
         Bukkit.getPluginManager().registerEvents(new MinecraftListener(broadcaster, this), this);
         broadcaster.Post(4, null, null);
-
+        Bukkit.getScheduler().runTaskTimer(this, new TPSMonitor(), 1L, 1L);
         String rawchannelid = this.getConfig().getString("chat_channel");
         String rawconsoleid = this.getConfig().getString("console_channel");
         if (rawchannelid.isEmpty() || rawchannelid == null) {return;}
