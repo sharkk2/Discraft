@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.discraft.api.CommandContext;
@@ -131,8 +132,12 @@ public final class Discraft extends JavaPlugin implements DiscraftAPI{
     public DiscraftMember getMember(long guildID, long userID) {
         Guild guild = discordBot.getJda().getGuildById(guildID);
         if (guild == null) {throw new IllegalArgumentException("No guild found with id: " + guildID);}
-        Member member = guild.getMemberById(userID);
-        if (member == null) {throw new IllegalArgumentException("No member found with id: " + userID);}
+        Member member;
+        try {
+            member = guild.retrieveMemberById(userID).complete();
+        } catch (ErrorResponseException e) {
+            throw new IllegalArgumentException("No member found with id: " + userID);
+        }
         List<DiscraftRole> roles = new ArrayList<>();
         for (Role role : member.getRoles()) {roles.add(CommandAdapter.toDiscraftRole(role));}
         return new DiscraftMember(member.getIdLong(), member.getEffectiveName(), member.getAvatarUrl(), member.getNickname(), roles, DiscraftMember._bakeActions(member));
